@@ -18,9 +18,9 @@ copyright
 tags
     aws ec2 ebs f#
 summary
-    Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule
+    Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule
 description
-    Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule
+    Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule
 files
     bin/Release/*.exe ==> tools
     bin/Release/*.dll ==> tools

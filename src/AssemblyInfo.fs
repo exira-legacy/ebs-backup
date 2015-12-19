@@ -1,13 +1,13 @@
 ﻿namespace System
 open System.Reflection
 
-[<assembly: AssemblyTitleAttribute("route-53-updater")>]
-[<assembly: AssemblyProductAttribute("Exira.Route53Updater")>]
-[<assembly: AssemblyDescriptionAttribute("Exira.Route53Updater is a console application which updates a Route 53 record with the current EC2 hostname")>]
-[<assembly: AssemblyVersionAttribute("1.1.12")>]
-[<assembly: AssemblyFileVersionAttribute("1.1.12")>]
-[<assembly: AssemblyMetadataAttribute("githash","1255678a52f1a8535e8d93e72aaaed0ab49409c5")>]
+[<assembly: AssemblyTitleAttribute("ebs-backup")>]
+[<assembly: AssemblyProductAttribute("Exira.EbsBackup")>]
+[<assembly: AssemblyDescriptionAttribute("Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule")>]
+[<assembly: AssemblyVersionAttribute("0.1.0")>]
+[<assembly: AssemblyFileVersionAttribute("0.1.0")>]
+[<assembly: AssemblyMetadataAttribute("githash","b8c7e58ae552d66f7fecfc5140329dce58b88526")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] Version = "1.1.12"
+    let [<Literal>] Version = "0.1.0"

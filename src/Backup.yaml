@@ -3,3 +3,8 @@
     AwsAccessKey: YOUR AWS ACCESS KEY
     AwsSecretKey: YOUR AWS SECRET KEY
     Region: YOUR AWS REGION
+
+    Volumes:
+    - vol-x
+    - vol-y
+    - vol-z

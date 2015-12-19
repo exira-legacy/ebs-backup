@@ -29,11 +29,11 @@ let project = "Exira.EbsBackup"
 
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
-let summary = "Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule"
+let summary = "Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule"
 
 // Longer description of the project
 // (used as a description for NuGet package; line breaks are automatically cleaned up)
-let description = "Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule"
+let description = "Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule"
 
 // List of author names (for NuGet package)
 let authors = [ "exira" ]

@@ -7,7 +7,7 @@
 ebs-backup [![NuGet Status](http://img.shields.io/nuget/v/Exira.EbsBackup.svg?style=flat)](https://www.nuget.org/packages/Exira.EbsBackup/)
 ======================
 
-Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule.
+Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule.
 
 ### Cloning
 

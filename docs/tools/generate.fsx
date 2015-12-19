@@ -19,7 +19,7 @@ let githubLink = "http://github.com/exira/ebs-backup"
 let info =
   [ "project-name", "ebs-backup"
     "project-author", "exira"
-    "project-summary", "Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule"
+    "project-summary", "Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule"
     "project-github", githubLink
     "project-nuget", "http://nuget.org/packages/Exira.EbsBackup" ]
 
