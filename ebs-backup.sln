@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{63A19D07-321B-416C-8BC8-BA42FF549D5A}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		build.fsx = build.fsx
+		docs\tools\generate.fsx = docs\tools\generate.fsx
+		docs\content\index.fsx = docs\content\index.fsx
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ebs-backup", "src\ebs-backup.fsproj", "{055CDB79-701C-487E-B036-E80E1B7F88EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{1C424B60-DB3A-49C0-A3A5-F0068DA5FE57}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{055CDB79-701C-487E-B036-E80E1B7F88EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{055CDB79-701C-487E-B036-E80E1B7F88EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{055CDB79-701C-487E-B036-E80E1B7F88EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{055CDB79-701C-487E-B036-E80E1B7F88EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

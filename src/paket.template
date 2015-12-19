@@ -1,0 +1,28 @@
+type project
+id
+    Exira.EbsBackup
+owners
+    exira
+authors
+    exira
+projectUrl
+    http://git.exira.com/ebs-backup/
+iconUrl
+    https://raw.githubusercontent.com/exira/ebs-backup/master/docs/files/img/logo.png
+licenseUrl
+    http://github.com/exira/ebs-backup/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+copyright
+    Copyright 2015
+tags
+    aws ec2 ebs f#
+summary
+    Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule
+description
+    Exira.EbsBackup is a console application which backs up EBS volumes on a rolling schedule
+files
+    bin/Release/*.exe ==> tools
+    bin/Release/*.dll ==> tools
+    bin/Release/*.config ==> tools
+    bin/Release/Backup.yaml ==> tools
