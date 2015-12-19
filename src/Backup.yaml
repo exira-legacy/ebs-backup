@@ -4,6 +4,11 @@
     AwsSecretKey: YOUR AWS SECRET KEY
     Region: YOUR AWS REGION
 
+    NumberOfDailyBackups: 7
+    NumberOfWeeklyBackups: 4
+    NumberOfMonthlyBackups: 6
+    NumberOfYearlyBackups: 2
+
     Volumes:
     - vol-x
     - vol-y
