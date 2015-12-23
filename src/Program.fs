@@ -19,14 +19,19 @@ type Errors =
     | FailedToRetrieveVolume of string * exn
     | FailedToTakeSnapshot of string * exn
     | FailedToRetrieveSnapshots of string * exn
+    | FailedToDeleteSnapshot of string * exn
+    | FailedToDeleteSnapshots of seq<Errors> * seq<Snapshot>
 
 let format errors =
-    let formatError error =
+    let rec formatError error =
         match error with
         | FailedToFindVolume volume -> sprintf "Could not find volume %s" volume
         | FailedToRetrieveVolume (volume, ex) -> sprintf "Could not retrieve volume %s: %s" volume (ex.ToString())
         | FailedToTakeSnapshot (volume, ex) -> sprintf "Could not take snapshots for %s: %s" volume (ex.ToString())
         | FailedToRetrieveSnapshots (volume, ex) -> sprintf "Could not retrieve snapshots for %s: %s" volume (ex.ToString())
+        | FailedToDeleteSnapshot (snapshot, ex) -> sprintf "Could not delete snapshot %s: %s" snapshot (ex.ToString())
+        | FailedToDeleteSnapshots (e, success) ->
+            e |> Seq.map formatError |> String.concat "\n"
 
     errors
     |> List.map formatError
@@ -97,9 +102,53 @@ let getSnapshots (snapshot: Snapshot) =
     with
     | ex -> fail [FailedToRetrieveSnapshots (snapshot.VolumeId, ex)]
 
-let pruneSnapshots snapshots =
-    // TODO: Remove on rotating schedule, return deleted snapshots
-    succeed snapshots
+let daysToKeep =
+    let today = DateTime.Today
+    let numberOfDailyBackups = backupConfig.Backup.NumberOfDailyBackups
+    let numberOfWeeklyBackups = backupConfig.Backup.NumberOfWeeklyBackups
+    let numberOfMonthlyBackups = backupConfig.Backup.NumberOfMonthlyBackups
+    let numberOfYearlyBackups = backupConfig.Backup.NumberOfYearlyBackups
+
+    let firstOfMonth = DateTime(today.Year, today.Month, 1)
+    let firstOfYear = DateTime(today.Year, 1, 1)
+
+    let daily = seq { for n in 0 .. numberOfDailyBackups - 1 do yield today.AddDays (float n * -1.) }
+
+    let weekly =
+        Seq.initInfinite (fun i -> today.AddDays (float i * -1.))
+        |> Seq.filter (fun date -> date.DayOfWeek = DayOfWeek.Sunday)
+        |> Seq.take numberOfWeeklyBackups
+
+    let monthly = seq { for n in 0 .. numberOfMonthlyBackups - 1 do yield firstOfMonth.AddMonths (n * -1) }
+
+    let yearly = seq { for n in 0 .. numberOfYearlyBackups - 1 do yield firstOfYear.AddYears (n * -1) }
+
+    daily
+    |> Seq.append weekly
+    |> Seq.append monthly
+    |> Seq.append yearly
+    |> Seq.distinct
+
+let pruneSnapshots (snapshots: seq<Snapshot>) =
+    let deleteSnapshot (snapshot: Snapshot) =
+        try
+            let request = DeleteSnapshotRequest snapshot.SnapshotId
+            ec2Client.DeleteSnapshot request |> ignore
+
+            succeed snapshot
+        with
+        | ex -> fail [FailedToDeleteSnapshot (snapshot.SnapshotId, ex)]
+
+    let prunedSnapshots =
+        snapshots
+        |> Seq.filter (fun s -> daysToKeep |> Seq.contains s.StartTime.Date |> not)
+        |> Seq.map deleteSnapshot
+
+    let failures = prunedSnapshots |> Seq.choose failureOnly |> Seq.collect id
+    let success = prunedSnapshots |> Seq.choose successOnly
+
+    if Seq.length failures > 0 then fail [FailedToDeleteSnapshots(failures, success)]
+    else succeed success
 
 let backup volume =
     volume
