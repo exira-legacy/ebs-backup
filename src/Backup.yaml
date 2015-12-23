@@ -9,7 +9,5 @@
     NumberOfMonthlyBackups: 6
     NumberOfYearlyBackups: 2
 
-    Volumes:
-    - vol-x
-    - vol-y
-    - vol-z
+    Tags:
+    - backup

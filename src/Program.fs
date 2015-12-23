@@ -15,39 +15,37 @@ let backupConfig = BackupConfig()
 backupConfig.Load configPath
 
 type Errors =
+    | FailedToBackupVolumes of Errors list
+    | FailedToRetrieveVolumes of seq<string> * exn
     | FailedToFindVolume of string
     | FailedToRetrieveVolume of string * exn
     | FailedToTakeSnapshot of string * exn
     | FailedToRetrieveSnapshots of string * exn
     | FailedToDeleteSnapshot of string * exn
-    | FailedToDeleteSnapshots of seq<Errors> * seq<Snapshot>
+    | FailedToDeleteSnapshots of Errors list
 
 let format errors =
     let rec formatError error =
         match error with
+        | FailedToRetrieveVolumes (tags, ex) -> sprintf "Could not find volumes for [%s]: %s" (String.concat ", " tags) (ex.ToString())
         | FailedToFindVolume volume -> sprintf "Could not find volume %s" volume
         | FailedToRetrieveVolume (volume, ex) -> sprintf "Could not retrieve volume %s: %s" volume (ex.ToString())
         | FailedToTakeSnapshot (volume, ex) -> sprintf "Could not take snapshots for %s: %s" volume (ex.ToString())
         | FailedToRetrieveSnapshots (volume, ex) -> sprintf "Could not retrieve snapshots for %s: %s" volume (ex.ToString())
         | FailedToDeleteSnapshot (snapshot, ex) -> sprintf "Could not delete snapshot %s: %s" snapshot (ex.ToString())
-        | FailedToDeleteSnapshots (e, success) ->
-            e |> Seq.map formatError |> String.concat "\n"
+        | FailedToBackupVolumes e
+        | FailedToDeleteSnapshots e
+            -> e |> List.map formatError |> String.concat Environment.NewLine
 
     errors
     |> List.map formatError
-
-let ec2Client =
-    new AmazonEC2Client(
-        backupConfig.Backup.AwsAccessKey,
-        backupConfig.Backup.AwsSecretKey,
-        RegionEndpoint.GetBySystemName backupConfig.Backup.Region)
 
 let printTags (tags: seq<Tag>) =
     tags |> Seq.map (fun t -> sprintf "[%s: %s]" t.Key t.Value) |> String.concat " "
 
 let printVolume (volume: Volume) =
     if backupConfig.Backup.Debug then
-        printfn "Volume: %s - Tags: %s" volume.VolumeId (printTags volume.Tags)
+        printfn "[Volume retrieved] Volume: %s - Tags: %s" volume.VolumeId (printTags volume.Tags)
     else ()
 
 let printSnapshot message (snapshot: Snapshot) =
@@ -58,6 +56,21 @@ let printSnapshot message (snapshot: Snapshot) =
 let printSnapshots message snapshots =
     if backupConfig.Backup.Debug then snapshots |> Seq.iter (printSnapshot message)
     else ()
+
+let ec2Client =
+    new AmazonEC2Client(
+        backupConfig.Backup.AwsAccessKey,
+        backupConfig.Backup.AwsSecretKey,
+        RegionEndpoint.GetBySystemName backupConfig.Backup.Region)
+
+let findVolumes (tags: seq<string>) =
+    try
+        let filters = new System.Collections.Generic.List<Filter>([ Filter("tag-key", new System.Collections.Generic.List<string>(tags)) ])
+        let request = DescribeVolumesRequest(Filters = filters)
+        let response = ec2Client.DescribeVolumes request
+        succeed response.Volumes
+    with
+    | ex -> fail [FailedToRetrieveVolumes (tags, ex)]
 
 let listVolume volume =
     try
@@ -128,6 +141,7 @@ let daysToKeep =
     |> Seq.append monthly
     |> Seq.append yearly
     |> Seq.distinct
+    |> Seq.toList
 
 let pruneSnapshots (snapshots: seq<Snapshot>) =
     let deleteSnapshot (snapshot: Snapshot) =
@@ -141,17 +155,21 @@ let pruneSnapshots (snapshots: seq<Snapshot>) =
 
     let prunedSnapshots =
         snapshots
-        |> Seq.filter (fun s -> daysToKeep |> Seq.contains s.StartTime.Date |> not)
+        |> Seq.filter (fun s -> daysToKeep |> List.contains s.StartTime.Date |> not)
         |> Seq.map deleteSnapshot
+        |> Seq.toList
 
-    let failures = prunedSnapshots |> Seq.choose failureOnly |> Seq.collect id
-    let success = prunedSnapshots |> Seq.choose successOnly
+    let failures = prunedSnapshots |> List.choose failureOnly |> List.collect id
+    let success = prunedSnapshots |> List.choose successOnly
 
-    if Seq.length failures > 0 then fail [FailedToDeleteSnapshots(failures, success)]
-    else succeed success
+    if List.isEmpty failures then
+        succeed success
+    else
+        printSnapshots "Snapshots pruned" success
+        fail [FailedToDeleteSnapshots failures]
 
-let backup volume =
-    volume
+let backupVolume (volume: Volume) =
+    volume.VolumeId
     |> listVolume
     |> map (printVolume |> tee)
     |> bind takeSnapshot
@@ -161,20 +179,33 @@ let backup volume =
     |> bind pruneSnapshots
     |> map (printSnapshots "Snapshots pruned" |> tee)
 
+let backup (volumes: seq<Volume>) =
+    let backups =
+        volumes
+        |> Seq.map backupVolume
+        |> Seq.toList
+
+    let failures = backups |> List.choose failureOnly |> List.collect id
+    let success = backups |> List.choose successOnly |> Seq.collect id
+
+    if List.isEmpty failures then succeed success
+    else fail [FailedToBackupVolumes failures]
+
+let backupFailed errors =
+    errors
+    |> format
+    |> String.concat Environment.NewLine
+    |> printfn "Errors:%s %s" Environment.NewLine
+
 [<EntryPoint>]
 let main _ =
     let backups =
-        backupConfig.Backup.Volumes
-        |> Seq.map backup
+        backupConfig.Backup.Tags
+        |> findVolumes
+        |> bind backup
 
-    let hasFailures = Seq.exists isFailure backups
-
-    if hasFailures then
-        printfn "Errors:"
-        backups
-        |> Seq.choose failureOnly
-        |> Seq.iter (fun errors ->  errors |> format |> String.concat Environment.NewLine |> printfn "%s")
-    else ()
-
-    if hasFailures then -1
-    else 0
+    match backups with
+    | Success _ -> 0
+    | Failure errors ->
+        backupFailed errors
+        -1
