@@ -22,6 +22,7 @@ type Errors =
     | FailedToTakeSnapshot of string * exn
     | FailedToRetrieveSnapshots of string * exn
     | FailedToDeleteSnapshot of string * exn
+    | SnapshotIsInUse of string * exn
     | FailedToDeleteSnapshots of Errors list
 
 let format errors =
@@ -33,6 +34,7 @@ let format errors =
         | FailedToTakeSnapshot (volume, ex) -> sprintf "Could not take snapshots for %s: %s" volume (ex.ToString())
         | FailedToRetrieveSnapshots (volume, ex) -> sprintf "Could not retrieve snapshots for %s: %s" volume (ex.ToString())
         | FailedToDeleteSnapshot (snapshot, ex) -> sprintf "Could not delete snapshot %s: %s" snapshot (ex.ToString())
+        | SnapshotIsInUse (snapshot, _) -> sprintf "Snapshot %s is in use" snapshot
         | FailedToBackupVolumes e
         | FailedToDeleteSnapshots e
             -> e |> List.map formatError |> String.concat Environment.NewLine
@@ -151,7 +153,9 @@ let pruneSnapshots (snapshots: seq<Snapshot>) =
 
             succeed snapshot
         with
-        | ex -> fail [FailedToDeleteSnapshot (snapshot.SnapshotId, ex)]
+        | ex ->
+            if ex.Message.Contains "is currently in use by" then fail [SnapshotIsInUse (snapshot.SnapshotId, ex)]
+            else fail [FailedToDeleteSnapshot (snapshot.SnapshotId, ex)]
 
     let prunedSnapshots =
         snapshots
