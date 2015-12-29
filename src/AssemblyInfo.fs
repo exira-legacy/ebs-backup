@@ -6,7 +6,7 @@ open System.Reflection
 [<assembly: AssemblyDescriptionAttribute("Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule")>]
 [<assembly: AssemblyVersionAttribute("0.1.0")>]
 [<assembly: AssemblyFileVersionAttribute("0.1.0")>]
-[<assembly: AssemblyMetadataAttribute("githash","53dec8a4bab86f772aec658c67217d012e0e5d86")>]
+[<assembly: AssemblyMetadataAttribute("githash","e600f58d00e56ba722b91189d83afaff7ccd88c0")>]
 do ()
 
 module internal AssemblyVersionInformation =

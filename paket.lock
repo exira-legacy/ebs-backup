@@ -8,17 +8,17 @@ NUGET
       PCLStorage (>= 1.0.2) - framework: portable-net45+win+wpa81+wp80+monoandroid10+xamarinios10+monotouch10
     AWSSDK.EC2 (3.1.7)
       AWSSDK.Core (>= 3.1.4.0 < 3.2)
-    Exira.ErrorHandling (0.1.33)
+    Exira.ErrorHandling (0.2.37)
       FSharp.Core
-    FAKE (4.11.0)
-    FSharp.Compiler.Service (1.4.0.6)
+    FAKE (4.12.0)
+    FSharp.Compiler.Service (1.4.2.3)
     FSharp.Configuration (0.5.7)
     FSharp.Core (4.0.0.1)
-    FSharp.Formatting (2.12.0)
-      FSharp.Compiler.Service (1.4.0.6)
-      FSharpVSPowerTools.Core (2.1.0)
-    FSharpVSPowerTools.Core (2.1.0)
-      FSharp.Compiler.Service (>= 1.4.0.6)
+    FSharp.Formatting (2.12.1)
+      FSharp.Compiler.Service (>= 1.4.2 < 1.5.0)
+      FSharpVSPowerTools.Core (>= 2.2.0 < 2.3.0)
+    FSharpVSPowerTools.Core (2.2.0)
+      FSharp.Compiler.Service (>= 1.4.2.0)
     Microsoft.Bcl (1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
     Microsoft.Bcl.Async (1.0.168) - framework: portable-net45+win+wpa81+wp80+monoandroid10+xamarinios10+monotouch10
@@ -104,5 +104,5 @@ NUGET
 GITHUB
   remote: fsharp/FAKE
   specs:
-    modules/Octokit/Octokit.fsx (821e264e79dbe73a5e67f00defd60265646b37b9)
+    modules/Octokit/Octokit.fsx (7d1a6f8e48d1e2e1e3246ea24a4de05cccc8ce64)
       Octokit
