@@ -55,8 +55,8 @@ let printSnapshot message (snapshot: Snapshot) =
         printfn "[%s] Volume: %s - Snapshot: %s - Date: %A - Description: %s - Tags: %s" message snapshot.VolumeId snapshot.SnapshotId snapshot.StartTime snapshot.Description (printTags snapshot.Tags)
     else ()
 
-let printSnapshots message snapshots =
-    if backupConfig.Backup.Debug then snapshots |> Seq.iter (printSnapshot message)
+let printSnapshots message (snapshots: seq<Snapshot>) =
+    if backupConfig.Backup.Debug then snapshots |> Seq.sortBy (fun s -> s.StartTime) |> Seq.iter (printSnapshot message)
     else ()
 
 let ec2Client =

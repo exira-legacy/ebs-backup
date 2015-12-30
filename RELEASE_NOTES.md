@@ -1,3 +1,6 @@
+#### 1.2 - December 30 2015
+* Print snapshots ordered by date in debug
+
 #### 1.1 - December 29 2015
 * Target .NET 4.6.1
 
