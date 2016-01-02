@@ -1,1 +1,115 @@
-"My Page" 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>exira - ebs-backup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule"/>
+    <meta name="author" content="exira"/>
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet"/>
+
+    <link type="text/css" rel="stylesheet" href="/ebs-backup/content/style.css" />
+    <script type="text/javascript" src="/ebs-backup/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="https://exira.com">exira.com</a></li>
+          <li><a href="http://git.exira.com">git.exira.com</a></li>
+          <li><a href="http://github.com/exira/ebs-backup">github page</a></li>
+        </ul>
+        <h3 class="muted"><a href="/ebs-backup/index.html">ebs-backup</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1><a name="ebs-backup" class="anchor" href="#ebs-backup">ebs-backup <a href="https://www.nuget.org/packages/Exira.EbsBackup/"><img src="http://img.shields.io/nuget/v/Exira.EbsBackup.svg?style=flat" alt="NuGet Status" /></a></a></h1>
+
+<p>Exira.EbsBackup is a console application which backs up EBS volumes on a rotating schedule.</p>
+
+<h3><a name="Usage" class="anchor" href="#Usage">Usage</a></h3>
+
+<ul>
+<li><p>Tag the volumes you wish to backup in the AWS console, e.g.: <code>backup</code> (a value is not needed)</p></li>
+<li>Download the latest release from <a href="https://github.com/exira/ebs-backup/releases">the GitHub releases page</a></li>
+<li><p>Unzip somewhere on a machine where you can put it in a scheduled task</p></li>
+<li>Edit <code>Backup.yaml</code> using:
+<ul>
+<li>AwsAccessKey: <code>YOUR AWS ACCESS KEY</code>, e.g.: <code>AXIURT98PXVXJU7K...</code></li>
+<li>AwsSecretKey: <code>YOUR AWS SECRET KEY</code>, e.g.: <code>1Y9poTREdb/8j1234Tr...</code></li>
+<li>Region: <code>YOUR AWS REGION</code>, e.g.: <code>eu-central-1</code></li>
+<li>NumberOfDailyBackups: <code># daily backups to keep</code>, e.g.: <code>7</code></li>
+<li>NumberOfWeeklyBackups: <code># weekly backups to keep</code>, e.g.: <code>4</code></li>
+<li>NumberOfMonthlyBackups: <code># monthly backups to keep</code>, e.g.: <code>6</code></li>
+<li>NumberOfYearlyBackups: <code># yearly backups to keep</code>, e.g.: <code>2</code></li>
+<li><p>Tags: <code>List of tagnames</code>, e.g.: <code>- backup</code></p></li>
+</ul></li>
+<li><p>Run <code>ebs-backup.exe</code> on a fixed time (put it in a scheduled task)</p></li>
+<li><p>For all volumes with the specified tags a snapshot will be taken and snapshots which do not meet your retention settings will be deleted</p></li>
+</ul>
+
+<h3><a name="Cloning" class="anchor" href="#Cloning">Cloning</a></h3>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="git">
+### Contributing and copyright
+
+The project is hosted on [GitHub][gh] where you can [report issues][issues], fork
+the project and submit pull requests. You might also want to read the
+[library design notes][readme] to understand how it works.
+
+For more information see the [License file][license] in the GitHub repository.
+
+  [content]: https://github.com/exira/ebs-backup/tree/master/docs/content
+  [gh]: https://github.com/exira/ebs-backup
+  [issues]: https://github.com/exira/ebs-backup/issues
+  [readme]: https://github.com/exira/ebs-backup/blob/master/README.md
+  [license]: https://github.com/exira/ebs-backup/blob/master/LICENSE.txt</code></pre></td></tr></table>
+
+
+        </div>
+        <div class="span3">
+        <img src="/ebs-backup/img/logobig.png" alt="exira.com" style="width:150px;margin:10px" />
+          <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
+            <li class="nav-header">ebs-backup</li>
+            <li><a href="/ebs-backup/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="http://nuget.org/packages/Exira.EbsBackup">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/exira/ebs-backup">Source Code on GitHub</a></li>
+            <li><a href="/ebs-backup/license.html">License</a></li>
+            <li><a href="/ebs-backup/release-notes.html">Release Notes</a></li>
+
+            
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="/ebs-backup/reference/index.html">API Reference</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/exira/ebs-backup"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"/></a>
+  </body>
+  </html>
