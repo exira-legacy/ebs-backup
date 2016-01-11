@@ -9,5 +9,6 @@ nuget SourceLink.Fake
 nuget FSharp.Configuration
 nuget Exira.ErrorHandling
 nuget AWSSDK.EC2
+nuget Serilog.Sinks.Seq
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx

@@ -1,3 +1,6 @@
+#### 1.3 - January 11 2016
+* Add SeriLog
+
 #### 1.2 - December 30 2015
 * Print snapshots ordered by date in debug
 
