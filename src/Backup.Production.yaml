@@ -1,5 +1,5 @@
 ﻿Backup:
-    Debug: true
+    Debug: false
     AwsAccessKey: YOUR AWS ACCESS KEY
     AwsSecretKey: YOUR AWS SECRET KEY
     Region: YOUR AWS REGION

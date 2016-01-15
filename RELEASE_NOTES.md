@@ -1,3 +1,6 @@
+#### 1.5 - January 16 2016
+* Treat volumes in use as warning
+
 #### 1.4 - January 14 2016
 * Catch unhandled exceptions
 

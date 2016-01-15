@@ -10,5 +10,6 @@ nuget FSharp.Configuration
 nuget Exira.ErrorHandling
 nuget AWSSDK.EC2
 nuget Serilog.Sinks.Seq
+nuget Destructurama.FSharp
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx

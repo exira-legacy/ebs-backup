@@ -10,7 +10,7 @@ module Program =
     let private backupConfig = Configuration.backupConfig
     let private logger = Serilogger.logger
 
-    type Errors =
+    type private Errors =
         | FailedToBackupVolumes of Errors list
         | FailedToRetrieveVolumes of seq<string> * exn
         | FailedToFindVolume of string
@@ -55,6 +55,12 @@ module Program =
         if backupConfig.Backup.Debug then snapshots |> Seq.sortBy (fun s -> s.StartTime) |> Seq.iter (printSnapshot message)
         else ()
 
+    let private getName (tags: seq<Tag>) fallback =
+        let name = tags |> Seq.tryFind (fun t -> t.Key = "Name")
+        match name with
+        | Some tag -> tag.Value
+        | None -> fallback
+
     let private ec2Client =
         new AmazonEC2Client(
             backupConfig.Backup.AwsAccessKey,
@@ -87,12 +93,7 @@ module Program =
             let request = CreateSnapshotRequest(volume.VolumeId, "Automated snapshot taken by ebs-backup")
             let response = ec2Client.CreateSnapshot request
             let snapshot = response.Snapshot
-
-            let name = volume.Tags |> Seq.tryFind (fun t -> t.Key = "Name")
-            let name =
-                match name with
-                | Some tag -> tag.Value
-                | None -> volume.VolumeId
+            let name = getName volume.Tags volume.VolumeId
 
             let request =
                 CreateTagsRequest(
@@ -148,7 +149,8 @@ module Program =
                 let request = DeleteSnapshotRequest snapshot.SnapshotId
                 ec2Client.DeleteSnapshot request |> ignore
 
-                logger.Information("EBS snapshot {snapshot} deleted", snapshot.SnapshotId)
+                let name = getName snapshot.Tags snapshot.VolumeId
+                logger.Information("EBS snapshot {name}@{snapshot} deleted", name, snapshot.SnapshotId)
                 succeed snapshot
             with
             | ex ->
@@ -194,15 +196,31 @@ module Program =
         else fail [FailedToBackupVolumes failures]
 
     let private backupFailed errors =
-        let errors =
+        let errorsAndWarnings =
             errors
-            |> List.filter (function SnapshotIsInUse _ -> false | _ -> true)
-            |> format
-            |> String.concat Environment.NewLine
-            |> sprintf "Errors:%s %s" Environment.NewLine
+            |> List.partition (function SnapshotIsInUse _ -> false | _ -> true)
 
-        printfn "%s" errors
-        logger.Fatal("EBS backup failed :( {errors}", errors)
+        let errors =
+            errorsAndWarnings
+            |> fst
+            |> format
+
+        if not <| List.isEmpty errors then
+            let errorText = errors |> String.concat Environment.NewLine
+            printfn "Errors:%s%s" Environment.NewLine errorText
+            logger.Fatal("EBS backup failed :( {errors}", errorText)
+        else ()
+
+        let warnings =
+            errorsAndWarnings
+            |> snd
+            |> format
+
+        if not <| List.isEmpty warnings then
+            let warningText = warnings |> String.concat Environment.NewLine
+            printfn "Warnings:%s%s" Environment.NewLine warningText
+            logger.Warning("EBS backup warnings: {warnings}", warningText)
+        else ()
 
     [<EntryPoint>]
     let main _ =
